@@ -187,6 +187,8 @@ class _TeamDetailPageState extends ConsumerState<TeamDetailPage> {
 
   Widget _buildPlayersSection() {
     final isAdmin = ref.watch(isAdminProvider);
+    final team = ref.watch(teamProvider).selectedTeam;
+    final players = team?.players ?? [];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -195,7 +197,7 @@ class _TeamDetailPageState extends ConsumerState<TeamDetailPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Players',
+              'Players (${players.length})',
               style: Theme.of(context).textTheme.titleLarge,
             ),
             if (isAdmin)
@@ -207,12 +209,96 @@ class _TeamDetailPageState extends ConsumerState<TeamDetailPage> {
               ),
           ],
         ),
-        const SizedBox(height: 8),
-        const Text(
-          'Go to Players tab to see team players',
-          style: TextStyle(color: Colors.grey),
-        ),
+        const SizedBox(height: 12),
+        if (players.isEmpty)
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade100,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Center(
+              child: Text(
+                'No players yet',
+                style: TextStyle(color: Colors.grey),
+              ),
+            ),
+          )
+        else
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: players.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 8),
+            itemBuilder: (context, index) {
+              final player = players[index];
+              return _buildPlayerCard(player);
+            },
+          ),
       ],
+    );
+  }
+
+  Widget _buildPlayerCard(player) {
+    return InkWell(
+      onTap: () => context.push('/players/${player.id}'),
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade200),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: AppTheme.primaryColor,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Center(
+                child: Text(
+                  '${player.jerseyNumber}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    player.name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    player.positionName.isNotEmpty
+                        ? player.positionName
+                        : player.position,
+                    style: TextStyle(
+                      color: Colors.grey.shade600,
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right, color: Colors.grey.shade400),
+          ],
+        ),
+      ),
     );
   }
 }

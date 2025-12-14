@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ayo_football_app/core/theme/AppTheme.dart';
 import 'package:ayo_football_app/core/widgets/coming_soon_sheet.dart';
+import 'package:ayo_football_app/features/report/presentation/pages/MatchReportsPage.dart';
+import 'package:ayo_football_app/features/report/presentation/pages/TopScorersPage.dart';
 
 /// AYO-style Report Page
 class ReportPage extends StatelessWidget {
@@ -34,12 +36,15 @@ class ReportPage extends StatelessWidget {
             'View detailed reports of completed matches',
             Icons.sports_soccer,
             AppTheme.primaryColor,
-            () => _showComingSoon(
-              context,
-              title: 'Match Reports',
-              description: 'Lihat laporan lengkap hasil pertandingan termasuk statistik pemain, possession, dan momen penting lainnya.',
-              icon: Icons.sports_soccer,
-            ),
+            isAvailable: true,
+            () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const MatchReportsPage(),
+                ),
+              );
+            },
           ),
           _buildReportCard(
             context,
@@ -47,13 +52,15 @@ class ReportPage extends StatelessWidget {
             'View top goal scorers leaderboard',
             Icons.emoji_events,
             Colors.amber,
-            () => _showComingSoon(
-              context,
-              title: 'Top Scorers',
-              description: 'Leaderboard pencetak gol terbanyak dengan statistik lengkap seperti assist, shot on target, dan hat-trick.',
-              icon: Icons.emoji_events,
-              illustrationPath: 'assets/images/player_champion.png',
-            ),
+            isAvailable: true,
+            () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const TopScorersPage(),
+                ),
+              );
+            },
           ),
           _buildReportCard(
             context,
@@ -61,6 +68,7 @@ class ReportPage extends StatelessWidget {
             'View team performance statistics',
             Icons.bar_chart,
             Colors.blue,
+            isAvailable: false,
             () => _showComingSoon(
               context,
               title: 'Team Statistics',
@@ -77,6 +85,7 @@ class ReportPage extends StatelessWidget {
             'View current league standings',
             Icons.leaderboard,
             Colors.green,
+            isAvailable: false,
             () => _showComingSoon(
               context,
               title: 'League Table',
@@ -90,6 +99,7 @@ class ReportPage extends StatelessWidget {
             'View player performance rankings',
             Icons.stars,
             Colors.purple,
+            isAvailable: false,
             () => _showComingSoon(
               context,
               title: 'Player Rankings',
@@ -120,8 +130,9 @@ class ReportPage extends StatelessWidget {
     String subtitle,
     IconData icon,
     Color color,
-    VoidCallback onTap,
-  ) {
+    VoidCallback onTap, {
+    bool isAvailable = false,
+  }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -174,22 +185,24 @@ class ReportPage extends StatelessWidget {
                               color: AppTheme.textPrimary,
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: AppTheme.primaryColor.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              'Soon',
-                              style: GoogleFonts.poppins(
-                                fontSize: 9,
-                                fontWeight: FontWeight.w600,
-                                color: AppTheme.primaryColor,
+                          if (!isAvailable) ...[
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                'Soon',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppTheme.primaryColor,
+                                ),
                               ),
                             ),
-                          ),
+                          ],
                         ],
                       ),
                       const SizedBox(height: 2),

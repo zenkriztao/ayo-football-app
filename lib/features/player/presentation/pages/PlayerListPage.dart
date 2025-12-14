@@ -75,6 +75,16 @@ class _PlayerListPageState extends ConsumerState<PlayerListPage> {
     );
   }
 
+  void _handleBack() {
+    final router = GoRouter.of(context);
+    if (router.canPop()) {
+      context.pop();
+    } else {
+      // Fallback to home if can't pop
+      context.go('/home');
+    }
+  }
+
   Widget _buildSliverAppBar() {
     return SliverAppBar(
       backgroundColor: AppTheme.backgroundColor,
@@ -82,29 +92,21 @@ class _PlayerListPageState extends ConsumerState<PlayerListPage> {
       pinned: true,
       elevation: 0,
       expandedHeight: 120,
+      automaticallyImplyLeading: false,
+      leading: IconButton(
+        onPressed: _handleBack,
+        icon: Icon(Icons.arrow_back, color: AppTheme.textPrimary),
+      ),
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
           color: AppTheme.backgroundColor,
           padding: const EdgeInsets.fromLTRB(16, 60, 16, 16),
-          child: Row(
-            children: [
-              IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: Icon(Icons.arrow_back, color: AppTheme.textPrimary),
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: SearchTextField(
-                  controller: _searchController,
-                  hintText: 'Find Player',
-                  onChanged: _onSearch,
-                  onClear: () => _onSearch(''),
-                  showLocationButton: true,
-                ),
-              ),
-            ],
+          child: SearchTextField(
+            controller: _searchController,
+            hintText: 'Find Player',
+            onChanged: _onSearch,
+            onClear: () => _onSearch(''),
+            showLocationButton: true,
           ),
         ),
       ),
