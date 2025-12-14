@@ -16,6 +16,7 @@ import 'package:ayo_football_app/features/match/presentation/pages/MatchListPage
 import 'package:ayo_football_app/features/match/presentation/pages/MatchDetailPage.dart';
 import 'package:ayo_football_app/features/match/presentation/pages/MatchFormPage.dart';
 import 'package:ayo_football_app/features/report/presentation/pages/ReportPage.dart';
+import 'package:ayo_football_app/features/profile/presentation/pages/ProfilePage.dart';
 import 'package:ayo_football_app/core/widgets/MainScaffold.dart';
 
 /// Provider for GoRouter
@@ -42,6 +43,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/register',
         builder: (context, state) => const RegisterPage(),
+      ),
+      GoRoute(
+        path: '/profile',
+        builder: (context, state) => const ProfilePage(),
       ),
 
       ShellRoute(

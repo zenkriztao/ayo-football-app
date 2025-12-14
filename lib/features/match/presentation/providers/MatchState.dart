@@ -26,17 +26,20 @@ class MatchState {
   factory MatchState.loading() => const MatchState(status: MatchStatus.loading);
 
   /// CopyWith for immutable updates
+  /// Use clearSelectedMatch: true to set selectedMatch to null
   MatchState copyWith({
     MatchStatus? status,
     List<MatchModel>? matches,
     MatchModel? selectedMatch,
+    bool clearSelectedMatch = false,
     String? errorMessage,
+    bool clearErrorMessage = false,
   }) {
     return MatchState(
       status: status ?? this.status,
       matches: matches ?? this.matches,
-      selectedMatch: selectedMatch ?? this.selectedMatch,
-      errorMessage: errorMessage ?? this.errorMessage,
+      selectedMatch: clearSelectedMatch ? null : (selectedMatch ?? this.selectedMatch),
+      errorMessage: clearErrorMessage ? null : (errorMessage ?? this.errorMessage),
     );
   }
 

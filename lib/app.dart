@@ -4,8 +4,6 @@ import 'core/config/app_config.dart';
 import 'core/router/AppRouter.dart';
 import 'core/theme/AppTheme.dart';
 
-/// Root widget aplikasi yang dibagi untuk semua flavors
-/// Auth check dilakukan di SplashPage
 class AyoFootballApp extends ConsumerWidget {
   const AyoFootballApp({super.key});
 

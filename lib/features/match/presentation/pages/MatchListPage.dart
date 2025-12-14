@@ -32,8 +32,13 @@ class _MatchListPageState extends ConsumerState<MatchListPage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    Future.microtask(
-        () => ref.read(matchProvider.notifier).getMatches(refresh: true));
+    // Only fetch if matches is empty
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final state = ref.read(matchProvider);
+      if (state.matches.isEmpty) {
+        ref.read(matchProvider.notifier).getMatches(refresh: true);
+      }
+    });
   }
 
   @override
@@ -240,11 +245,34 @@ class _MatchListPageState extends ConsumerState<MatchListPage>
   }
 
   Widget _buildMatchList(MatchState state) {
-    if (state.status == MatchStatus.loading && state.matches.isEmpty) {
-      return const LoadingWidget();
-    }
-
+    // If no data and loading or initial, show loading
     if (state.matches.isEmpty) {
+      if (state.status == MatchStatus.loading || state.status == MatchStatus.initial) {
+        return const LoadingWidget();
+      }
+
+      if (state.status == MatchStatus.error) {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.error_outline, size: 48, color: AppTheme.textTertiary),
+              const SizedBox(height: 16),
+              Text(
+                state.errorMessage ?? 'Terjadi kesalahan',
+                style: GoogleFonts.poppins(color: AppTheme.textSecondary),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => ref.read(matchProvider.notifier).getMatches(refresh: true),
+                style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryColor),
+                child: Text('Coba Lagi', style: GoogleFonts.poppins(color: Colors.white)),
+              ),
+            ],
+          ),
+        );
+      }
+
       return EmptyStateWidget(
         message: 'No matches scheduled',
         subtitle: 'Check back later for upcoming matches',
@@ -253,10 +281,12 @@ class _MatchListPageState extends ConsumerState<MatchListPage>
       );
     }
 
+    // Has data - show list
     return RefreshIndicator(
       color: AppTheme.primaryColor,
-      onRefresh: () =>
-          ref.read(matchProvider.notifier).getMatches(refresh: true),
+      onRefresh: () async {
+        await ref.read(matchProvider.notifier).getMatches(refresh: true);
+      },
       child: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: state.matches.length,

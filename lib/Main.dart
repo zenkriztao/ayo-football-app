@@ -6,12 +6,9 @@ import 'core/router/AppRouter.dart';
 import 'core/theme/AppTheme.dart';
 import 'features/auth/presentation/providers/AuthProvider.dart';
 
-/// Application entry point
-/// Using Riverpod for state management
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Set system UI overlay style for status bar
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: AppTheme.primaryColor,
@@ -27,8 +24,6 @@ void main() {
   );
 }
 
-/// Root application widget
-/// Applying Single Responsibility Principle - only handles app configuration
 class AyoFootballApp extends ConsumerStatefulWidget {
   const AyoFootballApp({super.key});
 
@@ -40,7 +35,6 @@ class _AyoFootballAppState extends ConsumerState<AyoFootballApp> {
   @override
   void initState() {
     super.initState();
-    // Check auth status when app starts
     Future.microtask(() => ref.read(authProvider.notifier).checkAuthStatus());
   }
 

@@ -5,8 +5,6 @@ import 'core/config/app_config.dart';
 import 'core/services/storage_service.dart';
 import 'app.dart';
 
-/// Entry point untuk Development flavor
-/// Gunakan command: flutter run --flavor dev -t lib/main_dev.dart
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 

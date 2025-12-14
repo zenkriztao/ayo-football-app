@@ -118,7 +118,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
           ),
           IconButton(
-            onPressed: () => context.push('/login'),
+            onPressed: () => context.push('/profile'),
             icon: Icon(
               Icons.person_outline,
               color: AppTheme.textPrimary,

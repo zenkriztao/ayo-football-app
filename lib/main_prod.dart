@@ -5,8 +5,6 @@ import 'core/config/app_config.dart';
 import 'core/services/storage_service.dart';
 import 'app.dart';
 
-/// Entry point untuk Production flavor
-/// Gunakan command: flutter run --flavor prod -t lib/main_prod.dart
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 

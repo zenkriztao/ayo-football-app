@@ -18,7 +18,10 @@ class MatchNotifier extends StateNotifier<MatchState> {
 
   /// Get list matches
   Future<void> getMatches({bool refresh = false, String? status}) async {
-    state = state.copyWith(status: MatchStatus.loading);
+    // Only show loading if no data exists yet
+    if (state.matches.isEmpty) {
+      state = state.copyWith(status: MatchStatus.loading);
+    }
 
     final response = await _matchRepository.getMatches(status: status);
 
@@ -37,18 +40,15 @@ class MatchNotifier extends StateNotifier<MatchState> {
 
   /// Get match by ID
   Future<void> getMatchById(String id) async {
-    state = state.copyWith(status: MatchStatus.loading);
-
+    // Don't change global status to avoid affecting list page
     final response = await _matchRepository.getMatchById(id);
 
     if (response.isSuccess && response.data != null) {
       state = state.copyWith(
-        status: MatchStatus.loaded,
         selectedMatch: response.data,
       );
     } else {
       state = state.copyWith(
-        status: MatchStatus.error,
         errorMessage: response.message,
       );
     }
@@ -74,16 +74,52 @@ class MatchNotifier extends StateNotifier<MatchState> {
 
   /// Record match result
   Future<bool> recordResult(String id, Map<String, dynamic> data) async {
-    state = state.copyWith(status: MatchStatus.loading);
-
     final response = await _matchRepository.recordResult(id, data);
 
-    if (response.isSuccess) {
-      await getMatches(refresh: true);
+    if (response.isSuccess && response.data != null) {
+      // Update both selectedMatch and the match in the list
+      final updatedMatches = state.matches.map((m) {
+        if (m.id == id) {
+          return response.data!;
+        }
+        return m;
+      }).toList();
+
+      state = state.copyWith(
+        status: MatchStatus.loaded,
+        matches: updatedMatches,
+        selectedMatch: response.data,
+      );
       return true;
     } else {
       state = state.copyWith(
-        status: MatchStatus.error,
+        errorMessage: response.message,
+      );
+      return false;
+    }
+  }
+
+  /// Update match
+  Future<bool> updateMatch(String id, Map<String, dynamic> data) async {
+    final response = await _matchRepository.updateMatch(id, data);
+
+    if (response.isSuccess && response.data != null) {
+      // Update both selectedMatch and the match in the list
+      final updatedMatches = state.matches.map((m) {
+        if (m.id == id) {
+          return response.data!;
+        }
+        return m;
+      }).toList();
+
+      state = state.copyWith(
+        status: MatchStatus.loaded,
+        matches: updatedMatches,
+        selectedMatch: response.data,
+      );
+      return true;
+    } else {
+      state = state.copyWith(
         errorMessage: response.message,
       );
       return false;
@@ -92,16 +128,19 @@ class MatchNotifier extends StateNotifier<MatchState> {
 
   /// Delete match
   Future<bool> deleteMatch(String id) async {
-    state = state.copyWith(status: MatchStatus.loading);
-
     final response = await _matchRepository.deleteMatch(id);
 
     if (response.isSuccess) {
-      await getMatches(refresh: true);
+      // Remove from list directly
+      final updatedMatches = state.matches.where((m) => m.id != id).toList();
+      state = state.copyWith(
+        status: MatchStatus.loaded,
+        matches: updatedMatches,
+        clearSelectedMatch: true,
+      );
       return true;
     } else {
       state = state.copyWith(
-        status: MatchStatus.error,
         errorMessage: response.message,
       );
       return false;
@@ -110,7 +149,7 @@ class MatchNotifier extends StateNotifier<MatchState> {
 
   /// Clear selected match
   void clearSelectedMatch() {
-    state = state.copyWith(selectedMatch: null);
+    state = state.copyWith(clearSelectedMatch: true);
   }
 }
 
