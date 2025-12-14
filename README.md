@@ -1,58 +1,125 @@
 # AYO Football App
 
-A Flutter mobile application for managing football teams, players, and matches. This app integrates with the AYO Football Backend API.
+A Flutter mobile application for managing football teams, players, and matches. This app integrates with the AYO Football Backend API hosted on Railway.
+
+## Live API
+
+```
+Base URL: https://ayo-football-api-production.up.railway.app/api/v1
+```
+
+## QA Testing Status
+
+| Feature | Status |
+|---------|--------|
+| Splash Screen | Tested |
+| Onboarding | Tested |
+| Authentication (Login/Register) | Tested |
+| Home Dashboard | Tested |
+| Team Management | Tested |
+| Player Management | Tested |
+| Match Management | Tested |
+| Reports | Tested |
 
 ## Features
 
+- **Splash Screen**: Animated logo with maroon gradient theme
+- **Onboarding**: 3-page introduction with custom illustrations
 - **Authentication**: Login/Register with JWT-based authentication
-- **Team Management**: View and manage football teams
-- **Player Management**: View and manage players with position and jersey number
-- **Match Management**: View and manage match schedules and results
+- **Team Management**: Create, view, edit, and delete football teams
+- **Player Management**: Manage players with position and jersey number
+- **Match Management**: Schedule matches and record results
 - **Reports**: View match reports and statistics
 
 ## Technology Stack
 
-- **Framework**: Flutter 3.0+
-- **State Management**: flutter_bloc (Cubit pattern)
-- **Dependency Injection**: get_it
-- **HTTP Client**: Dio
-- **Navigation**: go_router
-- **Local Storage**: flutter_secure_storage
-- **Architecture**: Clean Architecture with Feature-First structure
+| Category | Technology |
+|----------|------------|
+| Framework | Flutter 3.0+ |
+| State Management | Riverpod |
+| HTTP Client | Dio |
+| Navigation | go_router |
+| Local Storage | SharedPreferences, flutter_secure_storage |
+| Architecture | Clean Architecture (Feature-First) |
+| UI Components | Material Design 3 |
 
 ## Project Structure
 
 ```
 lib/
-├── main.dart
+├── main_dev.dart          # Development entry point
+├── main_staging.dart      # Staging entry point
+├── main_prod.dart         # Production entry point
+├── app.dart               # Root app widget
 ├── core/
 │   ├── api/
-│   │   ├── api_client.dart
-│   │   └── api_response.dart
+│   │   ├── ApiClient.dart
+│   │   └── ApiResponse.dart
+│   ├── config/
+│   │   └── app_config.dart
 │   ├── constants/
-│   │   └── app_constants.dart
-│   ├── di/
-│   │   └── injection.dart
+│   │   └── AppConstants.dart
+│   ├── providers/
+│   │   └── CoreProviders.dart
 │   ├── router/
-│   │   └── app_router.dart
+│   │   └── AppRouter.dart
+│   ├── services/
+│   │   └── storage_service.dart
 │   ├── theme/
-│   │   └── app_theme.dart
+│   │   └── AppTheme.dart
 │   └── widgets/
-│       └── main_scaffold.dart
+│       ├── MainScaffold.dart
+│       ├── LoadingWidget.dart
+│       ├── ErrorStateWidget.dart
+│       ├── EmptyStateWidget.dart
+│       ├── TeamCard.dart
+│       ├── PlayerCard.dart
+│       ├── MatchCard.dart
+│       └── ...
 └── features/
+    ├── splash/
+    │   └── presentation/pages/splash_page.dart
+    ├── onboarding/
+    │   └── presentation/pages/onboarding_page.dart
     ├── auth/
     │   ├── data/
-    │   │   ├── models/
-    │   │   └── repositories/
+    │   │   ├── models/UserModel.dart
+    │   │   └── repositories/AuthRepositoryImpl.dart
     │   ├── domain/
-    │   │   └── repositories/
+    │   │   └── repositories/AuthRepository.dart
     │   └── presentation/
-    │       ├── cubit/
+    │       ├── providers/AuthProvider.dart
     │       └── pages/
+    │           ├── LoginPage.dart
+    │           └── RegisterPage.dart
+    ├── home/
+    │   └── presentation/pages/home_page.dart
     ├── team/
+    │   ├── data/
+    │   ├── domain/
+    │   └── presentation/
+    │       └── pages/
+    │           ├── TeamListPage.dart
+    │           ├── TeamDetailPage.dart
+    │           └── TeamFormPage.dart
     ├── player/
+    │   ├── data/
+    │   ├── domain/
+    │   └── presentation/
+    │       └── pages/
+    │           ├── PlayerListPage.dart
+    │           ├── PlayerDetailPage.dart
+    │           └── PlayerFormPage.dart
     ├── match/
+    │   ├── data/
+    │   ├── domain/
+    │   └── presentation/
+    │       └── pages/
+    │           ├── MatchListPage.dart
+    │           ├── MatchDetailPage.dart
+    │           └── MatchFormPage.dart
     └── report/
+        └── presentation/pages/ReportPage.dart
 ```
 
 ## Getting Started
@@ -62,7 +129,7 @@ lib/
 - Flutter SDK 3.0 or higher
 - Dart SDK 3.0 or higher
 - Android Studio / VS Code
-- Backend API running (see ayo-football-backend)
+- FVM (Flutter Version Management) - Optional
 
 ### Installation
 
@@ -77,37 +144,99 @@ lib/
    flutter pub get
    ```
 
-3. **Configure API URL**
+3. **Run the app**
 
-   Edit `lib/core/constants/app_constants.dart`:
-   ```dart
-   // For Android emulator
-   static const String baseUrl = 'http://10.0.2.2:8080/api/v1';
-
-   // For iOS simulator
-   static const String baseUrl = 'http://localhost:8080/api/v1';
-
-   // For physical device (use your computer's IP)
-   static const String baseUrl = 'http://192.168.x.x:8080/api/v1';
-   ```
-
-4. **Run the app**
+   Using Make commands:
    ```bash
-   flutter run
+   # Development
+   make run-dev
+
+   # Staging
+   make run-staging
+
+   # Production
+   make run-prod
    ```
 
-### Building for Production
+   Or using Flutter directly:
+   ```bash
+   # Development
+   flutter run -t lib/main_dev.dart --flavor dev
+
+   # Staging
+   flutter run -t lib/main_staging.dart --flavor staging
+
+   # Production
+   flutter run -t lib/main_prod.dart --flavor prod
+   ```
+
+### VS Code Debug Configuration
+
+Press `Cmd+Shift+D` (macOS) or `Ctrl+Shift+D` (Windows/Linux) to open debug panel and select:
+
+- **Development (iOS)** - Run dev flavor on iOS
+- **Development (Android)** - Run dev flavor on Android
+- **Staging (iOS)** - Run staging flavor on iOS
+- **Staging (Android)** - Run staging flavor on Android
+- **Production (iOS)** - Run production flavor on iOS
+- **Production (Android)** - Run production flavor on Android
+
+## Build Flavors
+
+| Flavor | Package ID | Description |
+|--------|------------|-------------|
+| dev | com.ayofootball.dev | Development with logging enabled |
+| staging | com.ayofootball.staging | Staging for QA testing |
+| prod | com.ayofootball | Production release |
+
+### Building for Release
 
 ```bash
-# Android APK
-flutter build apk --release
+# Android APK (Development)
+flutter build apk -t lib/main_dev.dart --flavor dev
 
-# Android App Bundle
-flutter build appbundle --release
+# Android APK (Production)
+flutter build apk -t lib/main_prod.dart --flavor prod --release
 
-# iOS
-flutter build ios --release
+# Android App Bundle (Production)
+flutter build appbundle -t lib/main_prod.dart --flavor prod --release
+
+# iOS (Production)
+flutter build ios -t lib/main_prod.dart --release
 ```
+
+## API Configuration
+
+The app connects to the AYO Football Backend API hosted on Railway:
+
+| Environment | Base URL |
+|-------------|----------|
+| Development | https://ayo-football-api-production.up.railway.app/api/v1 |
+| Staging | https://ayo-football-api-production.up.railway.app/api/v1 |
+| Production | https://ayo-football-api-production.up.railway.app/api/v1 |
+
+### API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | /auth/login | User login |
+| POST | /auth/register | User registration |
+| GET | /teams | List all teams |
+| POST | /teams | Create team |
+| GET | /teams/:id | Get team detail |
+| PUT | /teams/:id | Update team |
+| DELETE | /teams/:id | Delete team |
+| GET | /players | List all players |
+| POST | /players | Create player |
+| GET | /players/:id | Get player detail |
+| PUT | /players/:id | Update player |
+| DELETE | /players/:id | Delete player |
+| GET | /matches | List all matches |
+| POST | /matches | Create match |
+| GET | /matches/:id | Get match detail |
+| PUT | /matches/:id | Update match |
+| DELETE | /matches/:id | Delete match |
+| GET | /reports/matches | Match reports |
 
 ## Default Admin Credentials
 
@@ -116,51 +245,78 @@ Email: admin@ayofootball.com
 Password: Admin@123
 ```
 
-## Screenshots
+## App Flow
 
-The app features:
-- Team list with search functionality
-- Player list with filtering by team
-- Match schedule with status indicators
-- Match detail with score and goal scorers
-- Report dashboard
-
-## API Integration
-
-This app connects to the AYO Football Backend API. Make sure the backend is running before using the app.
-
-### API Endpoints Used
-
-- `POST /auth/login` - User login
-- `POST /auth/register` - User registration
-- `GET /teams` - List teams
-- `GET /players` - List players
-- `GET /matches` - List matches
-- `GET /reports/matches` - Match reports
+```
+Splash Screen
+     │
+     ▼
+┌─────────────────┐
+│ First Launch?   │
+└────────┬────────┘
+         │
+    ┌────┴────┐
+    │ Yes     │ No
+    ▼         ▼
+Onboarding   Check Auth
+    │             │
+    ▼         ┌───┴───┐
+  Login      │Logged │
+    │        │  In?  │
+    │        └───┬───┘
+    │       Yes  │  No
+    │        ▼   ▼
+    └──────► Home ◄── Login
+```
 
 ## Architecture
 
-The app follows Clean Architecture principles:
+The app follows Clean Architecture principles with Riverpod for state management:
 
-1. **Presentation Layer** (Cubit + Pages)
-   - Handles UI and user interactions
-   - Uses BLoC pattern with Cubit for state management
+### Layers
 
-2. **Domain Layer** (Repositories + Entities)
-   - Contains business logic
-   - Defines repository interfaces
+1. **Presentation Layer**
+   - Pages (UI)
+   - Providers (State Management with Riverpod)
+   - Widgets (Reusable UI Components)
 
-3. **Data Layer** (Models + Repository Implementations)
-   - Implements repository interfaces
-   - Handles API communication
+2. **Domain Layer**
+   - Entities (Business Objects)
+   - Repositories (Abstract Interfaces)
+
+3. **Data Layer**
+   - Models (Data Transfer Objects)
+   - Repository Implementations
+   - API Client
+
+## Git Branches
+
+| Branch | Description |
+|--------|-------------|
+| master | Production-ready code |
+| develop | Development branch |
+| feature/* | Feature branches |
+| release/* | Release preparation |
 
 ## Contributing
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
+3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
+
+### Commit Convention
+
+```
+feat: add new feature
+fix: bug fix
+docs: documentation changes
+style: formatting, missing semicolons, etc
+refactor: code refactoring
+test: adding tests
+chore: maintenance tasks
+```
 
 ## License
 
@@ -168,4 +324,8 @@ This project is licensed under the MIT License.
 
 ## Related Projects
 
-- [AYO Football Backend](https://github.com/zenkriztao/ayo-football-backend) - The backend API
+- [AYO Football Backend](https://github.com/zenkriztao/ayo-football-backend) - The backend API (Go + Fiber)
+
+## Contact
+
+- GitHub: [@zenkriztao](https://github.com/zenkriztao)
