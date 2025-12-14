@@ -1,0 +1,7 @@
+// Development Flavor Configuration
+#include "Generated.xcconfig"
+
+FLUTTER_TARGET=lib/main_dev.dart
+PRODUCT_BUNDLE_IDENTIFIER=com.ayofootball.dev
+PRODUCT_NAME=AYO Football Dev
+DISPLAY_NAME=AYO Football Dev
