@@ -1,0 +1,7 @@
+// Staging Flavor Configuration
+#include "Generated.xcconfig"
+
+FLUTTER_TARGET=lib/main_staging.dart
+PRODUCT_BUNDLE_IDENTIFIER=com.ayofootball.staging
+PRODUCT_NAME=AYO Football Staging
+DISPLAY_NAME=AYO Football Staging
